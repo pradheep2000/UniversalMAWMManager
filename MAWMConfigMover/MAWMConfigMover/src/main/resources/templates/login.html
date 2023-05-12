@@ -1,0 +1,45 @@
+
+<html xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login Page</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    </head>
+    <body style="background:#c6c6c2">
+        <div class = "container-fluid p-3">
+            <div>
+            <img th:src="@{/manhattan_logo2.png}" width="250" height="60"/>
+            </div>
+            <form action = "/displayGoLiveSites" method ="post" style="max-width: 450px; margin: 0 auto; background-color:#D5F3FE;">
+                <div  class="border border-secondary p-3 rounded">
+                    <h2 class = "text-center"><b>MA UNIFIED</b></h2>
+                    <h2 class = "text-center"><b>DC CONTROLLER</b></h2>
+                    <h5 th:text="${errorMsg}" class="text-danger container-fluid p-3">Error Message</h5>
+                    <div class="container-fluid p-3">
+                        <p>
+                            <label><b>Client Code</b></label><br>
+                            <select name="clientCode" style="width: 373px; height: 30px;" required autofocus>
+                                <option value = "">none</option>
+                                <option value = "HLTH">HLTH</option>
+                                <option value = "NAVI">NAVI</option>
+                                <option value = "NBAS">NBAS</option>
+                                <option value = "VIAV">VIAV</option>
+                                <option value = "DLHI">DLHI</option>
+                                <option value = "BRWK">BRWK</option>
+                            </select>
+                        </p>
+                        <label ><b>User Name</b></label><br>
+                        <input size="45" type="email" name="userId" placeholder ="User ID" required/><br>
+                        <br>
+                        <label><b>Password</b></label><br>
+                        <input size="45" type="password" name="password" placeholder ="Password" required/><br>
+                        <br>
+                        <p class="text-center">
+                            <input type="submit" value = "Login" class ="btn btn-primary"/>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
