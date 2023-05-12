@@ -21,10 +21,9 @@ public class LoginController {
 
 	@PostMapping(value = "/displayGoLiveSites")
 	public String Display(Model model, @RequestParam String userId, @RequestParam String password, @RequestParam String clientCode){
-		String usrName = environment.getProperty("userid");
 		String pwd = environment.getProperty("password");
 
-		if(userId.equals(usrName + "@manh.com"))
+		if(userId.contains("@manh.com"))
 		{
 			if (password.equals(pwd))
 			{
