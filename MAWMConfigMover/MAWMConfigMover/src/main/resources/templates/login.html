@@ -18,13 +18,10 @@
                         <p>
                             <label><b>Client Code</b></label><br>
                             <select name="clientCode" style="width: 373px; height: 30px;" required autofocus>
-                                <option value = "">none</option>
-                                <option value = "HLTH">HLTH</option>
-                                <option value = "NAVI">NAVI</option>
-                                <option value = "NBAS">NBAS</option>
-                                <option value = "VIAV">VIAV</option>
-                                <option value = "DLHI">DLHI</option>
-                                <option value = "BRWK">BRWK</option>
+                                <option value = "none">None</option>
+                                <option th:each="wmclients:${listClients}"
+                                        th:value="${wmclients.SlNo}"
+                                        th:text="${wmclients.ClientCode}"></option>
                             </select>
                         </p>
                         <label ><b>User Name</b></label><br>

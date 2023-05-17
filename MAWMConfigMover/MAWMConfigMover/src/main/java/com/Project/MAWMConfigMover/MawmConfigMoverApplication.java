@@ -11,5 +11,4 @@ public class MawmConfigMoverApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MawmConfigMoverApplication.class, args);
 	}
-
 }
