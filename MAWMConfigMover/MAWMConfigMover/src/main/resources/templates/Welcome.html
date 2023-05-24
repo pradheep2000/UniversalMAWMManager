@@ -1,8 +1,115 @@
+<!DOCTYPE html>
 <html>
-       	<head>
-       		<title>welcome page</title>
-       	</head>
-       	<body>
-       	<h2>Welcome to Config move</h2>
-       	</body>
- </html>
+<head>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid;
+            padding: 3px;
+        }
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+    />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+    ></script>
+    <style>
+        #map {
+            height: 50vh;
+            width: 80vw;
+            margin: auto;
+        }
+    </style>
+</head>
+<body style="background: #c6c6c2">
+<title>Client Sites</title>
+<section>
+    <img th:src="@{/manhattan_logo2.png}" width="250" height="60"/>
+</section>
+<hr/>
+<section>
+    <table class="center">
+        <thead>
+        <tr>
+            <td><b>Client Name</b></td>
+            <td><b>Live Sites</b></td>
+            <td><b>Golive Date</b></td>
+            <td><b>Longitude</b></td>
+            <td><b>Latitude</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sites, iStat : ${allSites}"
+            th:style="${iStat.odd}? 'font-weight: normal;'">
+            <td th:text="${sites.id}"></td>
+            <td th:text="${sites.liveSites}"></td>
+            <td th:text="${sites.golivedate}"></td>
+            <td th:text="${sites.longitude}"></td>
+            <td th:text="${sites.latitude}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+<hr/>
+
+<section>
+    <div id="map"></div>
+    <input type="hidden" id="data" th:value="${jsonData}"/>
+</section>
+
+<script>
+    var dataElem = document.getElementById("data");
+    var sites = JSON.parse(dataElem.value);
+    var zoomLevel = 5;
+
+    var map = L.map("map");
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+            '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    var markerIcon = L.icon({
+        iconUrl: "./marker.png",
+        iconSize: [40, 40]
+    });
+
+    var points = [];
+    let sumLat = 0, sumLong = 0;
+    for (let site of sites) {
+        let marker = L.marker([site.latitude, site.longitude], {
+            icon: markerIcon,
+        }).addTo(map);
+
+        let content = `<b>${site.id}</b><br>${site.liveSites}<br>${site.golivedate}`;
+        marker.bindPopup(content);
+        marker.on("click", () => {
+            marker.openPopup();
+        });
+        sumLat += Number(site.latitude);
+        sumLong += Number(site.longitude);
+        points.push([site.latitude, site.longitude]);
+    }
+
+    let centerLat = sumLat / sites.length;
+    let centerLong = sumLong / sites.length;
+    map.setView([centerLat, centerLong], zoomLevel);
+
+    var bounds = L.latLngBounds(points);
+    map.fitBounds(bounds);
+</script>
+</body>
+</html>

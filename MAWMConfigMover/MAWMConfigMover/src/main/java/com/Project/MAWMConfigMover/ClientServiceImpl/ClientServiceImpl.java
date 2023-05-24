@@ -7,14 +7,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
-
 @Service
-public class ClientServiceImpl{
+public class ClientServiceImpl {
 
     @Autowired
     private ClientRepository clientRepository;
-
 
     public List<Clients> findAll() {
         return clientRepository.findAll();

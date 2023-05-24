@@ -1,19 +1,28 @@
 package com.Project.MAWMConfigMover.Clients;
 
-import lombok.*;
-
 import javax.persistence.*;
 
 @Entity
-@Table(name="wmclients")
+@Table(name = "wmclients")
 public class Clients {
     @Id
-    @Column(name="sl_no")
+    @Column(name = "sl_no")
     private int SlNo;
-    @Column(name="client_code")
+
+    @Column(name = "client_code")
     private String clientCode;
-    @Column(name="clientdescription")
+
+    @Column(name = "clientdescription")
     private String clientdescription;
+
+    public Clients() {
+    }
+
+    public Clients(int slNo, String clientCode, String clientdescription) {
+        this.SlNo = slNo;
+        this.clientCode = clientCode;
+        this.clientdescription = clientdescription;
+    }
 
     public int getSlNo() {
         return SlNo;
@@ -27,33 +36,20 @@ public class Clients {
         return clientdescription;
     }
 
+    public void setClientdescription(String clientdescription) {
+        this.clientdescription = clientdescription;
+    }
+
     public String getClientCode() {
         return clientCode;
-    }
-
-    public Clients() {
-    }
-
-    public Clients(int slNo, String clientCode, String clientdescription) {
-        this.SlNo = slNo;
-        this.clientCode = clientCode;
-        this.clientdescription = clientdescription;
     }
 
     public void setClientCode(String clientCode) {
         this.clientCode = clientCode;
     }
 
-    public void setClientdescription(String clientdescription) {
-        this.clientdescription = clientdescription;
-    }
-
     @Override
     public String toString() {
-        return "Clients{" +
-                "SlNo=" + SlNo +
-                ", clientCode='" + clientCode + '\'' +
-                ", clientdescription='" + clientdescription + '\'' +
-                '}';
+        return "Clients{" + "SlNo=" + SlNo + ", clientCode='" + clientCode + '\'' + ", clientdescription='" + clientdescription + '\'' + '}';
     }
 }
