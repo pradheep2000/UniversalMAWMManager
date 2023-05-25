@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="https://www.thymeleaf.org">
 <head>
     <style>
         table,
@@ -35,6 +35,7 @@
 </head>
 <body style="background: #c6c6c2">
 <title>Client Sites</title>
+
 <section>
     <img th:src="@{/manhattan_logo2.png}" width="250" height="60"/>
 </section>
@@ -43,21 +44,22 @@
     <table class="center">
         <thead>
         <tr>
-            <td><b>Client Name</b></td>
-            <td><b>Live Sites</b></td>
-            <td><b>Golive Date</b></td>
+            <td><b>Facility</b></td>
+            <td><b>Client Code</b></td>
+            <td><b>Org</b></td>
             <td><b>Longitude</b></td>
             <td><b>Latitude</b></td>
+            <td><b>Go Live Date</b></td>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="sites, iStat : ${allSites}"
-            th:style="${iStat.odd}? 'font-weight: normal;'">
-            <td th:text="${sites.id}"></td>
-            <td th:text="${sites.liveSites}"></td>
-            <td th:text="${sites.golivedate}"></td>
-            <td th:text="${sites.longitude}"></td>
-            <td th:text="${sites.latitude}"></td>
+        <tr th:each="mawmclients:${allSites}">
+            <td th:text="${mawmclients.facility}"></td>
+            <td th:text="${mawmclients.clientcode}"></td>
+            <td th:text="${mawmclients.org}"></td>
+            <td th:text="${mawmclients.longitude}"></td>
+            <td th:text="${mawmclients.latitude}"></td>
+            <td th:text="${mawmclients.golivedate}"></td>
         </tr>
         </tbody>
     </table>
@@ -94,7 +96,7 @@
             icon: markerIcon,
         }).addTo(map);
 
-        let content = `<b>${site.id}</b><br>${site.liveSites}<br>${site.golivedate}`;
+        let content = `<b>${site.facility}</b><br>${site.org}<br>${site.golivedate}`;
         marker.bindPopup(content);
         marker.on("click", () => {
             marker.openPopup();

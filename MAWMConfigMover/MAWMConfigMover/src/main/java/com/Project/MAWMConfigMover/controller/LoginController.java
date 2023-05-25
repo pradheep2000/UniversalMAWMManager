@@ -1,9 +1,7 @@
 package com.Project.MAWMConfigMover.controller;
 
-import com.Project.MAWMConfigMover.ClientServiceImpl.ClientServiceImpl;
-import com.Project.MAWMConfigMover.ClientServiceImpl.ViavService;
-import com.Project.MAWMConfigMover.Clients.Clients;
-import com.Project.MAWMConfigMover.Clients.Viav;
+import com.Project.MAWMConfigMover.ClientServiceImpl.MAWMClientService;
+import com.Project.MAWMConfigMover.Clients.MAWMClients;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,19 +18,22 @@ import java.util.List;
 @Controller
 public class LoginController {
 
-	public List<Clients> listClients = new ArrayList();
-	@Autowired
-	private ClientServiceImpl clientService;
+	public List<MAWMClients> listClients = new ArrayList();
+	public List<String> clients = new ArrayList<>();
 
 	@Autowired
-	private ViavService viavService;
+	private MAWMClientService mawmClientService;
+
 
 	@GetMapping(value = "/login")
 	public String login(Model model) {
-		List<Clients> listClients = clientService.findAll();
-		System.out.println(listClients);
-		model.addAttribute("listClients", listClients);
-		model.addAttribute("wmclients", new Clients());
+
+		List<MAWMClients> listClients = mawmClientService.findAll();
+		for (MAWMClients list : listClients) {
+			if(!clients.contains(list.getClientCode()))
+				clients.add(list.getClientCode());
+		}
+		model.addAttribute("listClients", clients);
 		return "login";
 	}
 
@@ -42,28 +43,29 @@ public class LoginController {
 	@PostMapping(value = "/displayGoLiveSites")
 	public String Display(Model model, @RequestParam String userId, @RequestParam String password, @RequestParam String clientCode){
 		String pwd = environment.getProperty("password");
+		List<MAWMClients> listClients = mawmClientService.findAll();
+		for (MAWMClients list : listClients) {
+			if(!clients.contains(list.getClientCode()))
+				clients.add(list.getClientCode());
+		}
 		if(userId.contains("@manh.com")) {
 			if (password.equals(pwd)) {
-				List<Viav> allSites = viavService.getAllSites();
-				model.addAttribute("allSites", allSites);
-				String jsonData = new Gson().toJson(allSites);
+				model.addAttribute("allSites", listClients);
+				model.addAttribute("mawmclients", new MAWMClients());
+				String jsonData = new Gson().toJson(listClients);
 				model.addAttribute("jsonData", jsonData);
 				//sleep(1);
 
 				return "Welcome";
 			} else {
 				model.addAttribute("errorMsg", "Invalid Password");
+				model.addAttribute("listClients", clients);
 				return "login";
 			}
 		}
 		model.addAttribute("errorMsg", "Unauthorized access");
+		model.addAttribute("listClients", clients);
 		return "login";
 	}
-
-	@GetMapping("/livesites")
-	public List<Viav> getAllSites() {
-		return viavService.getAllSites();
-	}
-
 
 }
