@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class MAWMClientService {
 
+    List<MAWMClients> listClients = new ArrayList<>();
     @Autowired
     private MAWMClientRepo mawmClientRepo;
     public List<MAWMClients> getAllSites() {
@@ -20,5 +21,13 @@ public class MAWMClientService {
     }
     public List<MAWMClients> findAll() {
         return mawmClientRepo.findAll();
+    }
+
+    public MAWMClients saveSite(MAWMClients client) {
+        return mawmClientRepo.save(client);
+    }
+
+    public List<MAWMClients> fetchDataByClientcode(String clientcode) {
+        return mawmClientRepo.findAllByclientcode(clientcode);
     }
 }

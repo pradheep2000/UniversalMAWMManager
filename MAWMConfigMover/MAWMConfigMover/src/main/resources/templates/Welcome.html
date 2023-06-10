@@ -12,6 +12,11 @@
             margin-left: auto;
             margin-right: auto;
         }
+        #map {
+            height: 50vh;
+            width: 80vw;
+            margin: auto;
+        }
     </style>
     <link
             rel="stylesheet"
@@ -25,21 +30,127 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""
     ></script>
-    <style>
-        #map {
-            height: 50vh;
-            width: 80vw;
-            margin: auto;
+    <script>
+        function confirmAction() {
+            var id = document.getElementById("facility").value;
+            var golivedate = document.getElementById("golivedate").value;
+
+            var confirmationMessage = "Are you sure you want to submit the form?\n\n";
+            confirmationMessage += "id: " + id + "\n";
+            confirmationMessage += "golivedate: " + golivedate;
+
+            var confirmation = confirm(confirmationMessage);
+
+            if (confirmation) {
+                document.getElementById("myForm").submit();
+            } else {
+                // User canceled, do nothing or redirect to another page
+            }
         }
-    </style>
+        function confirmRadioAction(){
+            // Get all the select elements in the table
+            var selects = document.querySelectorAll("table select");
+            var selectedSourceValues = [];
+            var selectedDestValues = [];
+            var action;
+            var checkedRadioButton = document.querySelector("input[name='action']:checked");
+            if (checkedRadioButton) {
+                action = checkedRadioButton.value;
+            }
+            // Loop through each select element and check its value
+            for (var i = 0; i < selects.length; i++) {
+                var select = selects[i];
+                var value = select.value;
+                // Check if the value is "Source"
+                if (value === "Source") {
+                    // Get the facility of this row
+                    var facility = select.parentElement.parentElement.querySelector("td:first-child").textContent;
+                    // Display the facility in an alert box
+                    // alert("Facility of selected source: " + facility);
+                    selectedSourceValues.push(facility);
+                    if(selectedSourceValues.length>1) {
+                        alert("Error: Only one source can be selected.");
+                        resetAll();
+                        return;
+                    }
+                }
+                if (value === "Destination") {
+                    // Get the facility of this row
+                    var facility = select.parentElement.parentElement.querySelector("td:first-child").textContent;
+                    // Display the facility in an alert box
+                    // alert("Facility of selected source: " + facility);
+                    selectedDestValues.push(facility);
+                }
+            }
+            // alert("You have selected: \nSource: " + selectedSourceValues.join(", ")
+            //     + " \nDestination: " + selectedDestValues.join(", ")
+            // + " \nAction: " + action);
+
+            var confirmed = confirm("You have selected: \nSource: " + selectedSourceValues.join(", ")
+                + " \nDestination: " + selectedDestValues.join(", ")
+                + " \nAction: " + action);
+            if(confirmed)
+            {
+                var data = {
+                    // Get the selected source facility
+                    sourceFacility: selectedSourceValues.join(", "),
+                    // Get the selected destination facility
+                    destinationFacility: selectedDestValues.join(", "),
+                    // Get the selected radio button value
+                    action: action
+                };
+                // Encode the data as a query string
+                var queryString = Object.keys(data)
+                    .map(function(key) {
+                        return encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    })
+                    .join("&");
+                if(action === "Config Mover") {
+                    // Go to the new page with the selected data
+                    window.location.href = "ConfigMover.html";
+                    document.getElementById("clientForm").submit();
+                }
+                // if(action === "Code Mover") {
+                //     // Go to the new page with the selected data
+                //     window.location.href = "CodeMover.html?" + queryString;
+                // }
+
+                // alert("goto next page");
+            }
+            else{
+                alert("stay on same page");
+            }
+
+        }
+
+        function resetAll()
+        {
+            // ...
+            // Code to check the selected values and submit the data
+            // ...
+            // Reset all the select elements in the table
+            var selects = document.querySelectorAll("table select");
+            for (var i = 0; i < selects.length; i++) {
+                var select = selects[i];
+                select.value = "Select";
+            }
+            // Reset all the radio buttons
+            var radioButtons = document.querySelectorAll("input[type='radio']");
+            for (var i = 0; i < radioButtons.length; i++) {
+                var radioButton = radioButtons[i];
+                radioButton.checked = false;
+            }
+        }
+    </script>
 </head>
+
 <body style="background: #c6c6c2">
 <title>Client Sites</title>
-
 <section>
     <img th:src="@{/manhattan_logo2.png}" width="250" height="60"/>
 </section>
 <hr/>
+
 <section>
     <table class="center">
         <thead>
@@ -53,25 +164,76 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="mawmclients:${allSites}">
-            <td th:text="${mawmclients.facility}"></td>
-            <td th:text="${mawmclients.clientcode}"></td>
-            <td th:text="${mawmclients.org}"></td>
-            <td th:text="${mawmclients.longitude}"></td>
-            <td th:text="${mawmclients.latitude}"></td>
-            <td th:text="${mawmclients.golivedate}"></td>
-        </tr>
+        <form action = "/configCodeMover" name="clientForm" id="clientForm"
+              method ="post" style="max-width: 450px; margin: 0 auto; background-color:#D5F3FE;">
+            <tr th:each="mawmclients:${allSites}">
+                <td th:text="${mawmclients.facility}" id="facility"></td>
+                <td th:text="${mawmclients.clientcode}"></td>
+                <td th:text="${mawmclients.org}"></td>
+                <td th:text="${mawmclients.longitude}"></td>
+                <td th:text="${mawmclients.latitude}"></td>
+                <td th:text="${mawmclients.golivedate}"></td>
+<!--                <td th:text="${selection}"></td>-->
+                <td >
+                    <select name="action" id="action">
+                        <option th:value="Select">Select</option>
+                        <option th:value="Source" name="Source">Source</option>
+                        <option th:value="Destination" name="Destination">Destination</option>
+                    </select>
+                </td>
+            </tr>
+        </form>
+        <input type="hidden" name="Source"/><br>
+        <input type="hidden" name="Destination"/><br>
         </tbody>
     </table>
+    <button id="openPopup">Add Facility</button>
+    <div id="popupContainer" class="border border-secondary p-3 rounded" style="display: none; position: fixed; top: 30px; z-index: 9999; justify-content: center; background-color: rgba(0, 0, 0, 0.5); align-items: center; left: 10px; width: 100%; height: 80%;">
+        <form action="/addFacility" method="post" id="popupForm" style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+            <label><b>Client Code</b></label><br>
+            <input type="text" name="clientCode" placeholder="Client Code" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <label><b>Org</b></label><br>
+            <input type="text" name="org" placeholder="Org" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <label><b>Facility</b></label><br>
+            <input type="text" name="facility" placeholder="Facility" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <label><b>Longitude</b></label><br>
+            <input type="text" name="longitude" placeholder="Longitude" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <label><b>Latitude</b></label><br>
+            <input type="text" name="latitude" placeholder="Latitude" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <label><b>GoLive Date</b></label><br>
+            <input type="date" name="goLiveDate" placeholder="GoLive Date" size="45" style="width: 70%; padding: 5px; margin-bottom: 10px;" required>
+            <br>
+            <input type="submit" value="Submit" style="width: auto; padding: 10px 20px; background-color: #4CAF50; color: #fff; border: none; cursor: pointer;">
+        </form>
+    </div>
+<div align="center">
+    <input type="radio" name="action" value="Config Mover">Config Mover</input>
+    <input type="radio" name="action" value="Code Mover">Code Mover</input>
+    <input type="submit" value="Submit" onclick="confirmRadioAction()"></input>
+    </div>
 </section>
 <hr/>
-
 <section>
     <div id="map"></div>
     <input type="hidden" id="data" th:value="${jsonData}"/>
 </section>
-
 <script>
+
+    const openButton = document.getElementById('openPopup');
+    const popupContainer = document.getElementById('popupContainer');
+    openButton.addEventListener('click', function() {
+    popupContainer.style.display = 'flex'; // Show the popup
+    });
+    popupContainer.addEventListener('click', function(event) {
+        if (event.target === popupContainer) {
+          popupContainer.style.display = 'none'; // Hide the popup if clicked outside the form
+        }
+    });
     var dataElem = document.getElementById("data");
     var sites = JSON.parse(dataElem.value);
     var zoomLevel = 5;
